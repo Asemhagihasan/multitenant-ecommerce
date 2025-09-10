@@ -1,0 +1,27 @@
+import { Category } from "@/payload-types";
+import CategoryDropdown from "./category-dropdown";
+
+interface Props {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
+}
+
+const Categories = ({ data }: Props) => {
+  return (
+    <div className="relative w-full">
+      <div className="flex flex-nowrap items-center">
+        {data?.map((category: Category) => (
+          <div key={category.id}>
+            <CategoryDropdown
+              category={category}
+              isActive={false}
+              isNavigationHoverd={false}
+            />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Categories;

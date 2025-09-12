@@ -1,45 +1,28 @@
 import Navbar from "./_components/navbar";
 import Footer from "./_components/footer";
-import SearchFilters from "./_components/search-filters";
-
-import { getPayload } from "payload";
-import configPromise from "@payload-config";
-import { Category } from "@/payload-types";
-import { CustomCategory } from "./types";
+import SearchFilters, {
+  SearchFiltersSkeleton,
+} from "./_components/search-filters";
+import { getQueryClient, HydrateClient, trpc } from "@/trpc/server";
+import { Suspense } from "react";
 
 interface Props {
   children: React.ReactNode;
 }
 
 const Layout = async ({ children }: Props) => {
-  const payload = await getPayload({
-    config: configPromise,
-  });
+  const queryClient = getQueryClient();
 
-  const data = await payload.find({
-    collection: "categories",
-    pagination: false,
-    depth: 1,
-    where: {
-      parent: {
-        exists: false,
-      },
-    },
-    sort: "name",
-  });
-
-  const formatedData: CustomCategory[] = data?.docs?.map((doc) => ({
-    ...doc,
-    subCategories: (doc?.subCategories?.docs ?? []).map((doc) => ({
-      ...(doc as Category),
-      subCategories: undefined,
-    })),
-  }));
+  void queryClient.prefetchQuery(trpc.categories.getMany.queryOptions());
 
   return (
     <div className="flex flex-col min-h-screen justify-between">
       <Navbar />
-      <SearchFilters data={formatedData} />
+      <HydrateClient>
+        <Suspense fallback={<SearchFiltersSkeleton />}>
+          <SearchFilters />
+        </Suspense>
+      </HydrateClient>
       <div className="flex-1 bg-neutral-200">{children}</div>
       <Footer />
     </div>

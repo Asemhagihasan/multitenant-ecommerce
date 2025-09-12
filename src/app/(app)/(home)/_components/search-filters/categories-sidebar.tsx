@@ -9,23 +9,22 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-
-import { CustomCategory } from "../../types";
+import { CategoriesGetManyOutputSingle } from "@/modules/categories/types";
 
 interface Porps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  data: CustomCategory[];
+  data: CategoriesGetManyOutputSingle[];
 }
 
 const CategoriesSidebar = ({ isOpen, onOpenChange, data }: Porps) => {
   const router = useRouter();
   const [parentCategories, setParentCategories] = useState<
-    CustomCategory[] | null
+    CategoriesGetManyOutputSingle[] | null
   >(null);
 
   const [selectedCategory, setSelectedCategory] =
-    useState<CustomCategory | null>();
+    useState<CategoriesGetManyOutputSingle | null>();
 
   // If we have parent categories show those, otherwise show categories
   const currentCategories = parentCategories || data || [];
@@ -36,9 +35,11 @@ const CategoriesSidebar = ({ isOpen, onOpenChange, data }: Porps) => {
     onOpenChange(isOpen);
   };
 
-  const handleCategory = (category: CustomCategory) => {
+  const handleCategory = (category: CategoriesGetManyOutputSingle) => {
     if (category.subCategories && category.subCategories.length > 0) {
-      setParentCategories(category.subCategories as CustomCategory[]);
+      setParentCategories(
+        category.subCategories as CategoriesGetManyOutputSingle[]
+      );
       setSelectedCategory(category);
     } else {
       if (parentCategories && selectedCategory) {

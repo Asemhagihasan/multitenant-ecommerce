@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useTRPC } from "@/trpc/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -28,6 +28,7 @@ const popins = Poppins({ subsets: ["latin"], weight: "700" });
 
 const SignInView = () => {
   const router = useRouter();
+  const quertClient = useQueryClient();
   const trpc = useTRPC();
   const { mutate: login, isPending: isLoading } = useMutation(
     trpc.auth.login.mutationOptions()
@@ -46,7 +47,8 @@ const SignInView = () => {
       onError: (error) => {
         toast.error(error.message);
       },
-      onSuccess: () => {
+      onSuccess: async () => {
+        await quertClient.invalidateQueries(trpc.auth.session.queryFilter());
         toast.success("Logged in successfully");
         router.push("/");
       },
@@ -75,7 +77,7 @@ const SignInView = () => {
                 size="sm"
                 className="text-base border-none underline"
               >
-                <Link href="/sign-in">Sign up</Link>
+                <Link href="/sign-up">Sign up</Link>
               </Button>
             </div>
             <h1 className="text-4xl font-medium">

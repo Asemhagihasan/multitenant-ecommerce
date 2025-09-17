@@ -1,8 +1,8 @@
-import Navbar from "./_components/navbar";
-import Footer from "./_components/footer";
+import Navbar from "@/modules/home/ui/components/navbar";
+import Footer from "@/modules/home/ui/components/footer";
 import SearchFilters, {
   SearchFiltersSkeleton,
-} from "./_components/search-filters";
+} from "@/modules/home/ui/components/search-filters";
 import { getQueryClient, HydrateClient, trpc } from "@/trpc/server";
 import { Suspense } from "react";
 

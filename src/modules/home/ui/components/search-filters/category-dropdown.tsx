@@ -59,7 +59,7 @@ const CategoryDropdown = ({
           )}
           variant="elevated"
         >
-          <Link href={`/${category.slug === "all" ? "" : category.slug}"}`}>
+          <Link href={`/${category.slug === "all" ? "" : category.slug}`}>
             {category.name}
           </Link>
         </Button>

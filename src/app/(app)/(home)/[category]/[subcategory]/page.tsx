@@ -1,16 +1,32 @@
+import {
+  ProductList,
+  ProductListSkeleton,
+} from "@/modules/products/ui/components/product-list";
+import { trpc, getQueryClient, HydrateClient } from "@/trpc/server";
+import { Suspense } from "react";
+
 interface Porps {
   params: Promise<{
-    category: string;
     subcategory: string;
   }>;
 }
 
 const SubCategoryPage = async ({ params }: Porps) => {
-  const { category, subcategory } = await params;
+  const { subcategory } = await params;
+
+  const queryClient = getQueryClient();
+  void queryClient.prefetchQuery(
+    trpc.products.getMany.queryOptions({
+      category: subcategory,
+    })
+  );
+
   return (
-    <div>
-      {category} {subcategory}
-    </div>
+    <HydrateClient>
+      <Suspense fallback={<ProductListSkeleton />}>
+        <ProductList category={subcategory} />
+      </Suspense>
+    </HydrateClient>
   );
 };
 

@@ -40,12 +40,26 @@ export const authRouter = createTRPCRouter({
         });
       }
 
+      const tenant = await ctx.db.create({
+        collection: "tenants",
+        data: {
+          name: input.username,
+          slug: input.username,
+          stripeAccountId: "test",
+        },
+      });
+
       await ctx.db.create({
         collection: "users",
         data: {
           email,
           username,
           password,
+          tenants: [
+            {
+              tenant: tenant.id,
+            },
+          ],
         },
       });
 
@@ -56,8 +70,6 @@ export const authRouter = createTRPCRouter({
           password,
         },
       });
-
-      console.log("data", data);
 
       if (!data?.token) {
         throw new TRPCError({

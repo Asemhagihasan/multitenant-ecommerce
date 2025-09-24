@@ -1,5 +1,6 @@
+import { NextResponse } from "next/server";
 import { getPayload } from "payload";
-import configPromise from "./payload.config";
+import configPromise from "@/payload.config";
 
 export const categories = [
   {
@@ -137,17 +138,27 @@ export const categories = [
   },
 ];
 
-export const seed = async () => {
+export async function POST() {
   const payload = await getPayload({ config: configPromise });
 
-  // creeate admin user
+  const adminTenat = await payload.create({
+    collection: "tenants",
+    data: {
+      name: "admin",
+      slug: "admin",
+      stripeAccountId: "admin",
+    },
+  });
+
+  // create admin user
   await payload.create({
     collection: "users",
     data: {
-      email: "q2V6o@example.com",
+      email: "demo@admin.com",
       password: "demo",
       roles: ["super-admin"],
       username: "admin",
+      tenants: [{ tenant: adminTenat.id }],
     },
   });
 
@@ -173,8 +184,6 @@ export const seed = async () => {
       });
     }
   }
-};
 
-await seed();
-
-process.exit(0);
+  return NextResponse.json({ success: true });
+}
